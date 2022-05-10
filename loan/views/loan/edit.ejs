@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+    <form action="/loan/<%= loan.id %>/edit?_method=PUT" method="post">
+        Amount: <input type="number" name="amount" id="action" value="<%= loan.amount %>">
+        Interest: <input type="number" name="interest" id="interest" step=".01" value="<%= loan.interest %>">
+        TimePeriod: <input type="number" name="timePeriod" id="timePeriod" step=".1" value="<%= loan.timePeriod %>">
+        <select name="category" id="">
+            <option value="provide" <%= loan.category == 'provide' ? 'selected' : '' %>  >Provide</option>
+            <option value="request" <%= loan.category == 'request' ? 'selected' : '' %>>Request</option>
+        </select>
+        <button type="submit">Submit</button>
+    </form>
+
+</body>
+</html>
