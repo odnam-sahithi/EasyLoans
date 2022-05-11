@@ -32,7 +32,7 @@ const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
 
-const dburl = process.env.DB_URL || 'mongodb://localhost:27017/loan';
+const dburl =  'mongodb://localhost:27017/loan';
 
 // Connect MongoDB at default port 27017.
 mongoose.connect(dburl, {
@@ -96,7 +96,7 @@ app.use(async (req, res, next) => {
 })
 
 
-const { isLoggedIn, isAuthor, catchAsyncError, isReviewOwner } = require('./middleware');
+const { isLoggedIn, isAuthor, catchAsyncError, isReviewOwner, ExpressError } = require('./middleware');
 const Loan = require('./models/loan');
 const GoogleUser = require('./models/googleuser');
 
@@ -134,7 +134,7 @@ app.get('/home', isLoggedIn, catchAsyncError(async (req, res) => {
     }
     else {
         const x = await Loan.find().populate('owner');
-        const allLoans = x.filter((x) => { return x.isPending === true });
+        const allLoans = x.filter((x) => { return (x.isPending === true  && x.amount <= req.user.max_amount)});
         res.render('home', { allLoans, isPend: 0 });
     }
 
@@ -252,15 +252,33 @@ app.post('/profile/update/bankslips', isLoggedIn,  upload.array('image'), catchA
     const imgs = req.files.map(f => ({ url: f.path, filename: f.filename }));
 
     user.salarySlips.push(...imgs);
-    console.log(imgs);
+
     await user.save();
 
     res.redirect('/profile');
 }))
 
+app.get('/', (req, res) => {
+    res.redirect('/auth/login');
+})
+
 
 app.use('/loan', require('./routes/loan'));
 app.use('/auth', require('./routes/auth'));
+
+
+//404 ROUTE:
+app.all('*', (req, res, next) => {
+    next(new ExpressError('Page Not Found!', 404));
+})
+
+
+//  ERROR HANDLER:
+app.use((err, req, res, next) => {
+    if (!err.status) err.status = 500;
+    if (!err.message) err.message = 'Something went wrong!';
+    res.render('error', {err});
+})
 
 
 const port = process.env.PORT || 3000;

@@ -23,7 +23,7 @@ const googleuserSchema = new Schema({
     profilePicUrl: String,
     max_amount: {
         type: Number,
-        min: 0,
+        min: 1,
         max: 50000000
     },
     cibil: {
@@ -61,7 +61,8 @@ const googleuserSchema = new Schema({
     },
     ctc:{
         type: Number,
-        default: 0
+        default: 0,
+        min: 1000
     }
 
 }, opt);

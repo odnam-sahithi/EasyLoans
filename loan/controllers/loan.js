@@ -25,7 +25,14 @@ module.exports.LoanDB = async (req, res) => {
 module.exports.editLoan = async (req, res) => {
     const { id } = req.params;
     const loan = await Loan.findById(id);
-    res.render('loan/edit', { loan });
+    if(loan !== null){
+        res.render('loan/edit', { loan });
+    }
+    else{
+        req.flash('error', 'Loan might be deleted or not yet made.');
+        res.redirect('/home');
+    }
+    
 }
 
 module.exports.updateLoan = async (req, res) => {
@@ -50,7 +57,14 @@ module.exports.show = async (req, res) => {
             path: 'owner' // populate author of each review
         }
     })
-    res.render('loan/show', { loan });
+    if(loan !== null){
+        res.render('loan/show', { loan });
+    }
+    else{
+        req.flash('error', 'Loan might be deleted or not yet made.');
+        res.redirect('/home');
+    }
+    
 }
 
 module.exports.loanCounter = async (req, res) => {
@@ -74,7 +88,20 @@ module.exports.acceptCounter = async (req, res) => {
     const loan = await Loan.findById(id).populate('owner');
     const counter = await Counter.findById(c_id).populate('owner');
     const client = await GoogleUser.findById(counter.owner.id);
-
+    
+    if(loan === null){
+        req.flash('error', 'Loan might be deleted or not yet made.');
+        return res.redirect('/home');
+    }
+    if(counter === null){
+        req.flash('error', 'Counter might be deleted or not yet made.');
+        return res.redirect(`/loan/${id}/show`);
+    }
+    if(client === null){
+        req.flash('error', 'Client might be deleted or not yet made.');
+        return res.redirect('/home');
+    }
+    
     client.loans.push(loan.id);
     await client.save();
 
@@ -92,17 +119,38 @@ module.exports.acceptCounter = async (req, res) => {
     loan.timePeriod = counter.timePeriod;
     await loan.save();
 
+    var cat = '';
+    if(loan.category === 'provide') cat = 'Finance';
+    else cat = 'Request';
 
     var outputEmail;
     if (loan.category === 'provide') {
-        outputEmail = `Hey!!! It's a deal 🤝
-The finance provided by ${loan.owner.name} is accepted by ${client.name} in exchange for the counter made.
-Final Details:
-Amount:`;
+        outputEmail = `Hey!!! It's a deal 🤝 🥳 <br>
+            The finance provided by ${loan.owner.name} is accepted by ${client.name} in exchange for the counter made.
+            We are delighted to notify you that the Loan application has been approved. <br/><br/>
+            Loan Details: <br/>
+            Amount: ${loan.amount} <br/>
+            Tenure: ${loan.timePeriod} Years <br />
+            Interest: ${loan.interest}%<br />
+            Categeory: ${cat} <br />
+            So the tenure is ${loan.timePeriod} years for ${loan.amount} and @${loan.interest}% interest /-<br><br>
+            Thanks & Regards <br/>
+            <a href="/https://easyloans1.herokuapp.com/" style="text-decoration: none;font-family: 'Comic Sans MS', 'Comic Sans', cursive; color: black;">EasyLoans</a>
+`
+            ;
     } else {
-        outputEmail = `Hey!!! It's a deal 🤝 <br> The loan requested by ${loan.owner.name} is accepted to be financed by ${client.name} in exchange for the counter made.
-Final Details:
-Amount:`;
+        outputEmail = `Hey!!! It's a deal 🤝 <br> 
+            The loan requested by ${loan.owner.name} is accepted to be financed by ${client.name} in exchange for the counter made.
+            We are delighted to notify you that the Loan application has been approved. <br/><br/>
+            Loan Details: <br/>
+            Amount: ${loan.amount} <br/>
+            Tenure: ${loan.timePeriod} Years <br />
+            Interest: ${loan.interest}%<br />
+            Categeory: ${cat} <br />
+            So the tenure is ${loan.timePeriod} years for ${loan.amount} and @${loan.interest}% interest /-<br><br>
+            Thanks & Regards <br/>
+            <a href="/https://easyloans1.herokuapp.com/" style="text-decoration: none;font-family: 'Comic Sans MS', 'Comic Sans', cursive; color: black;">EasyLoans</a>
+            `;
     }
 
     // create reusable transporter object using the default SMTP transport
@@ -128,7 +176,7 @@ Amount:`;
         html: outputEmail, // html body
     }, (err, info) => {
         if (err) return console.log(err);
-       
+
         // console.log("Message sent: %s", info.messageId);
 
 
@@ -145,6 +193,16 @@ module.exports.rejectCounter = async (req, res) => {
     const loan = await Loan.findById(id);
     const counter = await Counter.findById(c_id).populate('owner');
 
+
+    if(loan === null){
+        req.flash('error', 'Loan might be deleted or not yet made.');
+        return res.redirect('/home');
+    }
+    if(counter === null){
+        req.flash('error', 'Counter might be deleted or not yet made.');
+        return res.redirect(`/loan/${id}/show`);
+    }
+
     // Delete counter
     await Counter.findByIdAndDelete(c_id);
     // Remove it from counters of loan
@@ -160,14 +218,14 @@ module.exports.rejectCounter = async (req, res) => {
         Make a fresh offer and try again.<br/>
         <br/>
         Thanks and Regards <br />
-        EasyLoans`;
+        <a href="/https://easyloans1.herokuapp.com/" style="text-decoration: none;font-family: 'Comic Sans MS', 'Comic Sans', cursive; color: black;">EasyLoans</a>`;
     } else {
         outputEmail = ` Sorry 😔😔 <br />
         Thank you for your recent application. We regret that ${loan.owner.name} rejects your response for the counter you produced.
-        Make a fresh offer and try again.
+        Make a fresh offer and try again.<br/>
         <br/>
         Thanks and Regards <br />
-        EasyLoans`;
+        <a href="/https://easyloans1.herokuapp.com/" style="text-decoration: none;font-family: 'Comic Sans MS', 'Comic Sans', cursive; color: black;">EasyLoans</a>`;
     }
 
     // create reusable transporter object using the default SMTP transport
@@ -193,12 +251,11 @@ module.exports.rejectCounter = async (req, res) => {
         html: outputEmail, // html body
     }, (err, info) => {
         if (err) return console.log(err);
-        
+
         // console.log("Message sent: %s", info.messageId);
 
 
     });
-
 
 
     res.redirect(`/loan/${id}/show`);
@@ -210,6 +267,16 @@ module.exports.acceptDirectly = async (req, res) => {
     const loan = await Loan.findById(id).populate('owner');
     const client = await GoogleUser.findById(req.user.id);
 
+    if(loan === null){
+        req.flash('error', 'Loan might be deleted or not yet made.');
+        return res.redirect('/home');
+    }
+
+    if(client === null){
+        req.flash('error', 'Client might be deleted or not yet made.');
+        return res.redirect('/home');
+    }
+
     client.loans.push(loan.id);
     await client.save();
 
@@ -219,16 +286,37 @@ module.exports.acceptDirectly = async (req, res) => {
 
     await loan.save();
 
+    var cat = '';
+    if(loan.category === 'provide') cat = 'Finance';
+    else cat = 'Request';
     var outputEmail;
+    
     if (loan.category === 'provide') {
-        outputEmail = `Hey!!! It's a deal 🤝
-The finance provided by ${loan.owner.name} is accepted by ${client.name}.
-Final Details:
-Amount:`;
+        outputEmail = `Hey!!! It's a deal 🤝 🥳 <br>
+        The finance provided by ${loan.owner.name} is accepted by ${client.name}. No counter made 🤩 <br/>
+        We are delighted to notify you that the Loan application has been approved. <br/><br/>
+        Loan Details: <br/>
+        Amount: ${loan.amount} <br/>
+        Tenure: ${loan.timePeriod} Years <br />
+        Interest: ${loan.interest}%<br />
+        Categeory: ${cat} <br />
+        So the tenure is ${loan.timePeriod} years for ${loan.amount} and @${loan.interest}% interest /-<br><br>
+        Thanks & Regards <br/>
+        <a href="/https://easyloans1.herokuapp.com/" style="text-decoration: none;font-family: 'Comic Sans MS', 'Comic Sans', cursive; color: black;">EasyLoans</a>
+        `;
     } else {
-        outputEmail = `Hey!!! It's a deal 🤝 <br> The loan requested by ${loan.owner.name} is accepted to be financed by ${client.name}.
-Final Details:
-Amount:`;
+        outputEmail = `Hey!!! It's a deal 🤝 <br> 
+            The loan requested by ${loan.owner.name} is accepted to be financed by ${client.name}.  No counter made 🤩 <br/>
+            We are delighted to notify you that the Loan application has been approved. <br/><br/>
+            Loan Details: <br/>
+            Amount: ${loan.amount} <br/>
+            Tenure: ${loan.timePeriod} Years <br />
+            Interest: ${loan.interest}%<br />
+            Categeory: ${cat} <br />
+            So the tenure is ${loan.timePeriod} years for ${loan.amount} and @${loan.interest}% interest/-<br><br>
+            Thanks & Regards <br/>
+            <a href="/https://easyloans1.herokuapp.com/" style="text-decoration: none;font-family: 'Comic Sans MS', 'Comic Sans', cursive; color: black;">EasyLoans</a>
+            `;
     }
     // create reusable transporter object using the default SMTP transport
     let transporter = nodemailer.createTransport({
@@ -253,7 +341,7 @@ Amount:`;
         html: outputEmail, // html body
     }, (err, info) => {
         if (err) return console.log(err);
-        
+
         // console.log("Message sent: %s", info.messageId);
 
 

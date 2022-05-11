@@ -48,13 +48,13 @@
         
 
         <br>
-        <span> <i class="fa-thin fa-browser"></i>Applications: <%= currentUser.loans.length %></span>
+        <span> <i class="fa-solid fa-file"></i>Applications: <%= currentUser.loans.length %></span>
         <br>
         <% const loa=currentUser.loans.filter((x)=> { return x.isPending === true }); %>
 
         <span> <i class="fa-solid fa-circle-exclamation"></i>Pending: <%= loa.length %></span>
         <br>
-        <span> <i class="fa-solid fa-badge-check"></i>Closed: <%= currentUser.loans.length - loa.length %></span>
+        <span> <i class="fa-solid fa-check-to-slot"></i>Closed: <%= currentUser.loans.length - loa.length %></span>
         <br>
         <% if(currentUser.aadharNumber !=='' ){ %>
             <span><i class="fa-solid fa-id-card"></i>Aadhar: 
@@ -75,6 +75,10 @@
             <br>
             <span><i class="fa-solid fa-sack-dollar"></i>CTC: 
                 <%= currentUser.ctc %>
+            </span>
+            <br>
+            <span><i class="fa-solid fa-check-to-slot"></i>CIBIL: 
+                <%= currentUser.cibil %>
             </span>
             <br>
             <span><i class="fa-solid fa-handshake-simple"></i>Max Loan Amount: 

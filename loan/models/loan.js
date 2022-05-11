@@ -25,7 +25,9 @@ const loanSchema = new Schema({
     },
     timePeriod: {
         type: Number,
-        required: true
+        required: true,
+        min: 0.1,
+        max: 50
     },
     counters: [{
         type: Schema.Types.ObjectId,

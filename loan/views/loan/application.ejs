@@ -19,46 +19,36 @@
             width: 70%;
             background-color: rgba(129, 125, 125, 0.137);
         }
+
         /* .img_loan{
             width: 110%;
         } */
 
         @media screen and (max-width: 760px) {
-            input, select{
+
+            input,
+            select {
                 width: 95%;
             }
         }
     </style>
-    <!-- <h1>This is give page</h1>
-
-    <form action="/loan/apply" method="post">
-        Amount: <input type="number" name="amount" id="amount">
-        Interest: <input type="number" name="interest" id="interest" step=".01">
-        TimePeriod: <input type="number" name="timePeriod" id="timePeriod" step=".1">
-        <select name="category" id="">
-            <option value="provide">Provide</option>
-            <option value="request">Request</option>
-        </select>
-        <button type="submit">Submit</button>
-    </form> -->
 
 
-
-<div class="contact">
+    <div class="contact">
         <form action="/loan/apply" method="post" style="padding: 10px; margin-top: 60px; text-align: center;">
             <div class="row"
                 style="background-color: white; padding:5%;margin-left: 10%;margin-right: 10%; border-radius: 10px; margin-top: -3%;margin-bottom: 0%;">
                 <h1 class="mb-4">THIS IS A FORM</h1>
-                
+
                 <div class="col-lg-6" class="form" style="background-color: white;">
-                    <input type="number" name="amount" id="amount" placeholder="Amount">
+                    <input type="number" name="amount" id="amount" placeholder="Amount" required>
                     <br>
-                    <input type="number" name="interest" id="interest" step=".01" placeholder="Interest">
+                    <input type="number" name="interest" id="interest" step=".01" placeholder="Interest" required>
                     <br>
-                    <input type="number" name="timePeriod" id="timePeriod" step=".1" placeholder="Tenure">
+                    <input type="number" name="timePeriod" id="timePeriod" step=".1" placeholder="Tenure" required>
                     <br>
 
-                    <select name="category" id="">
+                    <select name="category" id="" required>
                         <option value="provide">Provide</option>
                         <option value="request">Request</option>
                     </select>
@@ -69,9 +59,10 @@
                 </div>
 
                 <div class="col-lg-6">
-                    <img src="/stylesheets/loan_form.jpg" height="300vh" width="300vh" style="width: 100%;" class="ms-auto me-auto">
+                    <img src="/stylesheets/loan_form.jpg" height="300vh" width="300vh" style="width: 100%;"
+                        class="ms-auto me-auto">
                 </div>
 
             </div>
         </form>
-</div>
+    </div>
