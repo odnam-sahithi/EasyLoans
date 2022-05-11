@@ -75,7 +75,7 @@
 
     <div class="row mt-5">
         <div class="col-8 offset-2">
-            <% if(process.env.NODE_ENV != "production" ) { %>
+            <% if(process.env.NODE_ENV == "production" ) { %>
                 <section class="page_404">
                     <div class="container">
                         <div class="row">
@@ -103,7 +103,7 @@
                 </section>
                 <% } %>
 
-                    <% if(process.env.NODE_ENV =="production" ) { %>
+                    <% if(process.env.NODE_ENV != "production" ) { %>
                         <div class="alert alert-danger" role="alert">
                             <h3 class="alert-heading">
                                 <%= err.status %> : <%= err.name %>

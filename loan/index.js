@@ -32,7 +32,7 @@ const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
 
-const dburl =  'mongodb://localhost:27017/loan';
+const dburl =  process.env.DB_URL ||  'mongodb://localhost:27017/loan';
 
 // Connect MongoDB at default port 27017.
 mongoose.connect(dburl, {
@@ -134,7 +134,8 @@ app.get('/home', isLoggedIn, catchAsyncError(async (req, res) => {
     }
     else {
         const x = await Loan.find().populate('owner');
-        const allLoans = x.filter((x) => { return (x.isPending === true  && x.amount <= req.user.max_amount)});
+        // console.log(x);
+        const allLoans = x.filter((x) => { return (x.isPending === true  && x.amount <= req.user.max_amount && x.owner.id !== req.user.id)});
         res.render('home', { allLoans, isPend: 0 });
     }
 

@@ -61,7 +61,7 @@ const googleuserSchema = new Schema({
     },
     ctc:{
         type: Number,
-        default: 0,
+        default: 1000,
         min: 1000
     }
 
