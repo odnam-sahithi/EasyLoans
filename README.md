@@ -12,7 +12,7 @@ This is a web-based platform that supports individuals in seeking or financing m
 Users will be notified via ***Email*** on approval of any seek or finance by other users.
 
 ## Note
-Because this programme requires some ```.env``` variables to be utilised locally so we recommend going straight to that page [Easy Loans](https://easyloans1.herokuapp.com)
+Because this programme requires some ```.env``` variables to be utilised locally we recommend going straight to the page [Easy Loans](https://easyloans1.herokuapp.com)
 
 
 ## Contributing
