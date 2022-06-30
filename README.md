@@ -2,6 +2,7 @@
 # EasyLoans
 
 This is a web-based C2C platform that supports people in obtaining the greatest possible loans from others without the need of banks or assets.
+This website is made by Codersquad - Sanjay Marni, Sahithi Odnam, Sreekar Majety
 
 Visit at: https://easyloans1.herokuapp.com
 
